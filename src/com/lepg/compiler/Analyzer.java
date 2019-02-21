@@ -38,6 +38,7 @@ public class Analyzer {
         PrivateWord.add("boolean");
         PrivateWord.add("char");
         PrivateWord.add("string");
+        PrivateWord.add("var");
         
         Letter.add("_");
         for (Character i = 65; i < 123; i++) { //90 - 97
@@ -52,6 +53,8 @@ public class Analyzer {
     }
     
     public boolean analyze(String input) {
+        declaring = false;
+        cache = "";
         queue.clear();
         try {
             if(PrivateWord.contains(input.substring(0, input.indexOf(" ")))) {
@@ -74,13 +77,15 @@ public class Analyzer {
             cache = "";
             queue.remove(0);
             while(!(x = queue.remove(0)).equals("=")) {
-                if (Letter.contains(x) || (Number.contains(x) && !cache.equals("")))
+                if (Letter.contains(x) || (Number.contains(x) && !cache.equals(""))) {
                     cache += x;
-            else
-                return false;
+                    if(PrivateWord.contains(cache))
+                        return false;
+                }
+                    
+                else
+                    return false;
             }
-            if(PrivateWord.contains(cache))
-                return false;
             cache = x;
         }
         
@@ -151,7 +156,8 @@ public class Analyzer {
             if(Symbol.contains(x)) {
                 if(x.equals(Symbol.get(0))) {
                     cache = cache.charAt(cache.length() - 1) + "";
-                    if((Number.contains(cache) || Letter.contains(cache) || cache.equals(Symbol.get(3))) && queue.isEmpty())
+                    if((Number.contains(cache) || Letter.contains(cache) || cache.equals(Symbol.get(3))) && (queue.isEmpty()
+                            && par == 0))
                         return true;
                     else
                         return false;
@@ -167,7 +173,7 @@ public class Analyzer {
                 }
                 
                 if(x.equals(Symbol.get(2))) {
-                    if(Operator.contains(cache)) {
+                    if(Operator.contains(cache) || cache.equals(Symbol.get(2))) {
                         par++;
                         cache = x;
                         continue;
@@ -177,7 +183,7 @@ public class Analyzer {
                 }
                 
                 if(x.equals(Symbol.get(3))) {
-                    if(Number.contains(cache) || Letter.contains(cache)) {
+                    if(Number.contains(cache) || Letter.contains(cache) || cache.equals(Symbol.get(3))) {
                         par--;
                         cache = x;
                         continue;
@@ -186,10 +192,8 @@ public class Analyzer {
                         return false;
                 }
             }
-            System.out.println("XD1");
             return false;
         }
-        System.out.println("XD2");
         return false;
         
     }
