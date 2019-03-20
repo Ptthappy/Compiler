@@ -33,6 +33,7 @@ public class Analyzer {
         Operator.add("=");
         
         PrivateWord.add("int");
+        PrivateWord.add("const");
         PrivateWord.add("float");
         PrivateWord.add("double");
         PrivateWord.add("boolean");
