@@ -11,8 +11,8 @@ import java.util.Stack;
 
 public class Compiler {
     private final LexicalAnalyzer lexical = new LexicalAnalyzer();
-    private final SyntacticalAnalyzer syntac = new SyntacticalAnalyzer();
-    private final SemanticalAnalyzer semantic = new SemanticalAnalyzer();
+    private final SyntacticalAnalyzer syntactical = new SyntacticalAnalyzer();
+    private final SemanticalAnalyzer semantical = new SemanticalAnalyzer();
     
     public static final ArrayList<String> Number = new ArrayList<>();       //Numbers
     public static final ArrayList<String> Operator = new ArrayList<>();    //Operators
@@ -46,12 +46,12 @@ public class Compiler {
         PrivateWord.add("string");
         PrivateWord.add("var");
         
-        Letter.add("_");
         for (Character i = 65; i < 123; i++) { //90 - 97
             Letter.add(i.toString());
             if (i == 90) i = 96;
         }
         
+        Symbol.add("_");
         Symbol.add("$");
         Symbol.add(".");
         Symbol.add("(");
@@ -62,11 +62,12 @@ public class Compiler {
         if(!lexical.analyze(input))
             return false;
         
-//      if(!SyntacticalAnalyzer.analyze(input))
-//          return false;
+        if(!syntactical.analyze(input))
+          return false;
         
-//      if(!SemanticalAnalyzer.analyze(input))
+//      if(!semantical.analyze(input))
 //          return false;
+
         return true;
     }
 }

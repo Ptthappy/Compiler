@@ -23,8 +23,7 @@ public class LexicalAnalyzer {
                 int space = input.indexOf(" ");
                 queue.add(input.substring(0, space));
                 input = input.substring(space + 1);
-            }
-            else
+            } else
                 declaring = false;
         } catch (StringIndexOutOfBoundsException e) {}
         
