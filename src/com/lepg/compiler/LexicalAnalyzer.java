@@ -7,58 +7,18 @@ import java.util.ArrayList;
  */
 
 
-public class Analyzer {
-    private final ArrayList<String> Number = new ArrayList<>();       //Numbers
-    private final ArrayList<String> Operator = new ArrayList<>();    //Operators
-    private final ArrayList<String> PrivateWord = new ArrayList<>();    //Private language's words
-    private final ArrayList<String> Letter = new ArrayList<>();      //Letters
-    private final ArrayList<String> Symbol = new ArrayList<>();      //All the other symbols
-    
+public class LexicalAnalyzer {
     private String cache = "";
-    private boolean declaring;
+    private boolean declaring = false;
     
     private ArrayList<String> queue = new ArrayList<>();
-    
-    public Analyzer() {
-        for (Character i = 48; i < 58; i++) {
-            Number.add(i.toString());
-        }
-        
-        Operator.add("+");
-        Operator.add("-");
-        Operator.add("*");
-        Operator.add("**");
-        Operator.add("%");
-        Operator.add("/");
-        Operator.add("=");
-        
-        PrivateWord.add("int");
-        PrivateWord.add("const");
-        PrivateWord.add("float");
-        PrivateWord.add("double");
-        PrivateWord.add("boolean");
-        PrivateWord.add("char");
-        PrivateWord.add("string");
-        PrivateWord.add("var");
-        
-        Letter.add("_");
-        for (Character i = 65; i < 123; i++) { //90 - 97
-            Letter.add(i.toString());
-            if (i == 90) i = 96;
-        }
-        
-        Symbol.add("$");
-        Symbol.add(".");
-        Symbol.add("(");
-        Symbol.add(")");
-    }
     
     public boolean analyze(String input) {
         declaring = false;
         cache = "";
         queue.clear();
         try {
-            if(PrivateWord.contains(input.substring(0, input.indexOf(" ")))) {
+            if(Compiler.PrivateWord.contains(input.substring(0, input.indexOf(" ")))) {
                 declaring = true;
                 int space = input.indexOf(" ");
                 queue.add(input.substring(0, space));
@@ -78,9 +38,9 @@ public class Analyzer {
             cache = "";
             queue.remove(0);
             while(!(x = queue.remove(0)).equals("=")) {
-                if (Letter.contains(x) || (Number.contains(x) && !cache.equals(""))) {
+                if (Compiler.Letter.contains(x) || (Compiler.Number.contains(x) && !cache.equals(""))) {
                     cache += x;
-                    if(PrivateWord.contains(cache))
+                    if(Compiler.PrivateWord.contains(cache))
                         return false;
                 }
                     
@@ -96,7 +56,7 @@ public class Analyzer {
             String x = queue.remove(0);
             
             if(cache.equals("")) {
-                if(Number.contains(x) || Letter.contains(x)) {
+                if(Compiler.Number.contains(x) || Compiler.Letter.contains(x)) {
                     cache = x;
                     continue;
                 }
@@ -105,15 +65,16 @@ public class Analyzer {
             }
             
             if(privateFound) {
-                if(Letter.contains(x))
+                if(Compiler.Letter.contains(x))
                     privateFound = false;
                 else
                     return false;
             }
             
-            if(Number.contains(x)) {
-                if (Number.contains(cache) || Operator.contains(cache) || Letter.contains(cache) || cache.equals(Symbol.get(1)) 
-                        || cache.equals(Symbol.get(2))) {
+            if(Compiler.Number.contains(x)) {
+                if (Compiler.Number.contains(cache) || Compiler.Operator.contains(cache) || 
+                        Compiler.Letter.contains(cache) || cache.equals(Compiler.Symbol.get(1)) 
+                        || cache.equals(Compiler.Symbol.get(2))) {
                     cache = x;
                     continue;
                 }
@@ -123,11 +84,11 @@ public class Analyzer {
                     
             }
             
-            if(Operator.contains(x)) {
-                if(x.equals(Operator.get(6)))
+            if(Compiler.Operator.contains(x)) {
+                if(x.equals(Compiler.Operator.get(6)))
                     return false;
                 
-                if(Number.contains(cache) || Letter.contains(cache) || cache.equals(Symbol.get(3))) {
+                if(Compiler.Number.contains(cache) || Compiler.Letter.contains(cache) || cache.equals(Compiler.Symbol.get(3))) {
                     cache = x;
                     continue;
                 }
@@ -135,17 +96,17 @@ public class Analyzer {
                     return false;
             }
             
-            if(Letter.contains(x)) {
+            if(Compiler.Letter.contains(x)) {
                 String cachecito = cache.charAt(cache.length() - 1) + "";
-                if(Letter.contains(cachecito)) {
+                if(Compiler.Letter.contains(cachecito)) {
                     cache += x;
-                    if(PrivateWord.contains(cache)) {
+                    if(Compiler.PrivateWord.contains(cache)) {
                         privateFound = true;
                     }
                     continue;
                 }
                 
-                else if(Operator.contains(cachecito) || cachecito.equals(Symbol.get(2))) {
+                else if(Compiler.Operator.contains(cachecito) || cachecito.equals(Compiler.Symbol.get(2))) {
                     cache = x;
                     continue;
                 }
@@ -154,18 +115,19 @@ public class Analyzer {
                     return false;
             }
             
-            if(Symbol.contains(x)) {
-                if(x.equals(Symbol.get(0))) {
+            if(Compiler.Symbol.contains(x)) {
+                if(x.equals(Compiler.Symbol.get(0))) {
                     cache = cache.charAt(cache.length() - 1) + "";
-                    if((Number.contains(cache) || Letter.contains(cache) || cache.equals(Symbol.get(3))) && (queue.isEmpty()
+                    if((Compiler.Number.contains(cache) || Compiler.Letter.contains(cache) || 
+                            cache.equals(Compiler.Symbol.get(3))) && (queue.isEmpty()
                             && par == 0))
                         return true;
                     else
                         return false;
                 }
                 
-                if(x.equals(Symbol.get(1))) {
-                    if(Number.contains(cache)) {
+                if(x.equals(Compiler.Symbol.get(1))) {
+                    if(Compiler.Number.contains(cache)) {
                         cache = x;
                         continue;
                     }
@@ -173,8 +135,8 @@ public class Analyzer {
                         return false;
                 }
                 
-                if(x.equals(Symbol.get(2))) {
-                    if(Operator.contains(cache) || cache.equals(Symbol.get(2))) {
+                if(x.equals(Compiler.Symbol.get(2))) {
+                    if(Compiler.Operator.contains(cache) || cache.equals(Compiler.Symbol.get(2))) {
                         par++;
                         cache = x;
                         continue;
@@ -183,8 +145,8 @@ public class Analyzer {
                         return false;
                 }
                 
-                if(x.equals(Symbol.get(3))) {
-                    if(Number.contains(cache) || Letter.contains(cache) || cache.equals(Symbol.get(3))) {
+                if(x.equals(Compiler.Symbol.get(3))) {
+                    if(Compiler.Number.contains(cache) || Compiler.Letter.contains(cache) || cache.equals(Compiler.Symbol.get(3))) {
                         par--;
                         cache = x;
                         continue;
@@ -198,5 +160,5 @@ public class Analyzer {
         return false;
         
     }
-    
+        
 }
