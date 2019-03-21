@@ -21,10 +21,10 @@ public class Compiler {
     public static final ArrayList<String> Symbol = new ArrayList<>();      //All the other symbols
     
     public static HashMap<String, String> premises = new HashMap<>();
-    public static Stack<Character> stack = new Stack<>();
+    public static Stack<String> stack = new Stack<>();
     
     public static ArrayList<Character> actVar = new ArrayList<>();
-    public static HashMap<String, String[][]> variables = new HashMap<>();
+    public static HashMap<String, String> variables = new HashMap<>();
     
     public Compiler() {
         for (Character i = 48; i < 58; i++) { Number.add(i.toString()); }
@@ -45,6 +45,7 @@ public class Compiler {
         PrivateWord.add("char");
         PrivateWord.add("string");
         PrivateWord.add("var");
+        PrivateWord.add("let");
         
         for (Character i = 65; i < 123; i++) { //90 - 97
             Letter.add(i.toString());
@@ -59,11 +60,12 @@ public class Compiler {
     }
     
     public boolean compile(String input) {
-        if(!lexical.analyze(input))
+        int type;
+        if((type = lexical.analyze(input)) == -1)
             return false;
         
-        if(!syntactical.analyze(input))
-          return false;
+//      if(!syntactical.analyze(input, type))
+//          return false;
         
 //      if(!semantical.analyze(input))
 //          return false;

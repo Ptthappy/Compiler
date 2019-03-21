@@ -10,13 +10,6 @@ public class SyntacticalAnalyzer {
     private boolean equal;
     private int type;
     
-    /* int type
-    * 0: Declaring and Asigning
-    * 1: Declaring
-    * 2: Asigning
-    * 3: Expression
-    */
-    
     public boolean analyze(String input) {
         type = checkStatementType(input);
         System.out.println(type);
