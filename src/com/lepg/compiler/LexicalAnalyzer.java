@@ -1,6 +1,7 @@
 package com.lepg.compiler;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * @author Ptthappy
@@ -23,6 +24,7 @@ public class LexicalAnalyzer {
     public String analyze(String input) {
         int openingCount = 0;
         int closingCount = 0;
+        int equalCount = 0;
         int endCharacter = 0;
         for(int i = 0; i < input.length(); i++){
             if(input.charAt(i) == '('){
@@ -31,10 +33,14 @@ public class LexicalAnalyzer {
                 closingCount++;
             }else if(input.charAt(i) == '$'){
                 endCharacter++;
+            }else if(input.charAt(i) == '='){
+                equalCount++;
             }
         }
 
-        if(openingCount != closingCount || endCharacter > 1) return "";
+        if(openingCount != closingCount || endCharacter > 1 || equalCount > 1) return "";
+
+        if(input.trim().indexOf("$") != input.trim().length() - 1) return "";
 
         Compiler.par = openingCount;
         
@@ -84,6 +90,9 @@ public class LexicalAnalyzer {
                     newTokens.add(")");
                     parenthCount--;
                 }
+            }else if(s.length() > 1 && s.charAt(s.length() - 1) == '$'){
+                newTokens.add(s.substring(0, s.length() - 1));
+                newTokens.add("$");
             }else{
                 newTokens.add(s);
             }
@@ -100,22 +109,36 @@ public class LexicalAnalyzer {
                 return "";
             }else{
                 if(equalIndex == 1){
+                    System.out.println("Assigning");
                     Compiler.statementType = 2; //assigning
 
                     String variableName = newTokens.get(0);
+                    if(Compiler.Number.contains(variableName.charAt(0) + "") || Compiler.PrivateWord.contains(variableName)){
+                        return "";
+                    }
                     for(String str: variableName.split("")){
                         if(Compiler.Operator.contains(str) || Compiler.Symbol.contains(str)){
+                            if(!str.equals("_")) return "";
+                        }else if(!Compiler.Letter.contains(str) && !Compiler.Number.contains(str)){
                             return "";
                         }
                     }
+                    String next = "Var";
+
 
 
                 }else if(equalIndex == 2){
+                    System.out.println("Declaring and Assigning");
                     Compiler.statementType = 0; //declaring and assigning
 
                     String variableName = newTokens.get(1);
+                    if(Compiler.Number.contains(variableName.charAt(0) + "") || Compiler.PrivateWord.contains(variableName)){
+                        return "";
+                    }
                     for(String str: variableName.split("")){
                         if(Compiler.Operator.contains(str) || Compiler.Symbol.contains(str)){
+                            if(!str.equals("_")) return "";
+                        }else if(!Compiler.Letter.contains(str) && !Compiler.Number.contains(str)){
                             return "";
                         }
                     }
@@ -126,11 +149,13 @@ public class LexicalAnalyzer {
                     }
 
 
+
                 }
             }
 
         }else{
             if(newTokens.size() == 3){
+                System.out.println("Declaring");
                 Compiler.statementType = 1; //declaring
 
                 String reservedWord = newTokens.get(0);
@@ -139,14 +164,55 @@ public class LexicalAnalyzer {
                 }
 
                 String variableName = newTokens.get(1);
+                if(Compiler.Number.contains(variableName.charAt(0) + "") || Compiler.PrivateWord.contains(variableName)){
+                    return "";
+                }
                 for(String str: variableName.split("")){
                     if(Compiler.Operator.contains(str) || Compiler.Symbol.contains(str)){
+                        if(!str.equals("_")) return "";
+                    }else if(!Compiler.Letter.contains(str) && !Compiler.Number.contains(str)){
                         return "";
                     }
                 }
 
             }else if(newTokens.size() > 3 || newTokens.size() <= 2) {
+                System.out.println("Expression");
                 Compiler.statementType = 3; //expression
+                if(Compiler.PrivateWord.contains(newTokens.get(0))){
+                    return "";
+                }
+
+                String next = "Value";
+                if(newTokens.size() > 3){
+                    for (int i = 0; i < newTokens.size(); i++){
+                        String token = newTokens.get(i);
+                        if(token.equals("(") || token.equals(")")) continue;
+                        if(token.length() == 1){
+                            if(Compiler.Operator.contains(token)){
+                                if(!next.equals("Operator")){
+                                    return "";
+                                }
+                                next = "Value";
+                            }else if(Compiler.Number.contains(token) || Compiler.Symbol.contains(token) || Compiler.Letter.contains(token)){
+                                next = "Operator";
+                                continue;
+                            }
+                        }else{
+                            if(token.equals("**")){
+                               if(!next.equals("Operator")){
+                                   return "";
+                               }
+                               next = "Value";
+                            }else{
+                                if(!next.equals("Value")){
+                                    return "";
+                                }
+                                next = "Operator";
+                            }
+                        }
+                    }
+                }
+
             }
         }
 
