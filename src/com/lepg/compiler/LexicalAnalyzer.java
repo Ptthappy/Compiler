@@ -1,6 +1,6 @@
 package com.lepg.compiler;
 
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * @author Ptthappy
@@ -11,75 +11,183 @@ public class LexicalAnalyzer {
     private String cache = "";
     //private boolean declaring = false;
     
-    /*  Nunca está de más
+
     private final int declaringAndAsigning = 0;
     private final int declaring = 1;
     private final int asigning = 2;
     private final int statement = 3;
-    */
+
     
     private ArrayList<String> queue = new ArrayList<>();
     
     public String analyze(String input) {
-        int type = checkStatementType(input);
-        
-        if (type == -1)
-            return "";
-        
-        //switch aqui evaluando la verga dependiendo del tipo
-        
-        return "CULO VERDE";
-    }
-    
-    private int checkStatementType(String input) {
-        int x = input.indexOf('=');
-        
-        if(x == -1) { 
-            String a = input.substring(0, input.length() - 1);
-            a = a.trim();
-            String s[] = a.split(" ");
-            if(checkPrivateWord(s)) {
-                if(s.length == 2)
-                    return 1; //Declaring
-                
-                return -1;  //im chabista
-            }
-            return 3;  //Statement
-        }
-        /*
-        im fuckign retard  -1
-        let a = algo$       0
-        let a$              1
-        a = algo$           2
-        algo$               3
-        */
-        
-        else {
-            String s1 = input.substring(0, x);
-            String s[] = s1.split(" ");
-            
-            switch(s.length) {
-                case 1: 
-                    return 2;  //Asigning
-                    
-                case 2:
-                    return 0;  //Declaring and Asigning
-                    
-                default:
-                    return -1;  //im stupid
+        int openingCount = 0;
+        int closingCount = 0;
+        int endCharacter = 0;
+        for(int i = 0; i < input.length(); i++){
+            if(input.charAt(i) == '('){
+                openingCount++;
+            }else if(input.charAt(i) == ')'){
+                closingCount++;
+            }else if(input.charAt(i) == '$'){
+                endCharacter++;
             }
         }
+
+        if(openingCount != closingCount || endCharacter > 1) return "";
+
+        ArrayList<String> tokens = new ArrayList<String>();
+        Collections.addAll(tokens, input.trim().split(" "));
+
+
+        for(int i = 0; i < tokens.size(); i++){
+            System.out.print(tokens.get(i) + " ");
+        }
+
+        System.out.println();
+
+        ListIterator<String> iter = tokens.listIterator();
+        ArrayList<String> newTokens = new ArrayList<>();
+        while(iter.hasNext()){
+            String s = iter.next();
+            if(s.length() > 1 && s.charAt(0) == '('){
+                int count = 0;
+                for(int i = 0; i < s.length(); i++){
+                    if(s.charAt(i) == '('){
+                        count++;
+                    }else{
+                        break;
+                    }
+                }
+
+                int parenthCount = count;
+                while(parenthCount > 0){
+                    newTokens.add("(");
+                    parenthCount--;
+                }
+                newTokens.add(s.substring(count));
+            }else if(s.length() > 1 && s.charAt(s.length() - 1) == ')'){
+                int count = 0;
+                for(int i = s.length() - 1; i > 0; i--){
+                    if(s.charAt(i) == ')'){
+                        count++;
+                    }else{
+                        break;
+                    }
+                }
+
+                int parenthCount = count;
+                newTokens.add(s.substring(0, s.length()-(count)));
+                while(parenthCount > 0){
+                    newTokens.add(")");
+                    parenthCount--;
+                }
+            }else{
+                newTokens.add(s);
+            }
+        }
+        for(int i = 0; i < newTokens.size(); i++){
+            System.out.print(newTokens.get(i) + " ");
+        }
+
+        System.out.println();
+
+        if(newTokens.contains("=")){
+            int equalIndex = newTokens.indexOf("=");
+            if(equalIndex == 0 || equalIndex > 2){
+                return "";
+            }else{
+                if(equalIndex == 1){
+                    Compiler.statementType = 2; //assigning
+
+                    String variableName = newTokens.get(0);
+                    for(String str: variableName.split("")){
+                        if(Compiler.Operator.contains(str) || Compiler.Symbol.contains(str)){
+                            return "";
+                        }
+                    }
+
+
+                }else if(equalIndex == 2){
+                    Compiler.statementType = 0; //declaring and assigning
+
+                    String variableName = newTokens.get(1);
+                    for(String str: variableName.split("")){
+                        if(Compiler.Operator.contains(str) || Compiler.Symbol.contains(str)){
+                            return "";
+                        }
+                    }
+
+                    String reservedWord = newTokens.get(0);
+                    if(!Compiler.PrivateWord.contains(reservedWord)){
+                        return "";
+                    }
+
+
+                }
+            }
+
+        }else{
+            if(newTokens.size() == 3){
+                Compiler.statementType = 1; //declaring
+
+                String reservedWord = newTokens.get(0);
+                if(!Compiler.PrivateWord.contains(reservedWord)){
+                    return "";
+                }
+
+                String variableName = newTokens.get(1);
+                for(String str: variableName.split("")){
+                    if(Compiler.Operator.contains(str) || Compiler.Symbol.contains(str)){
+                        return "";
+                    }
+                }
+
+            }else if(newTokens.size() > 3 || newTokens.size() <= 2) {
+                Compiler.statementType = 3; //expression
+            }
+        }
+
+        int count = 1;
+
+        ArrayList<String> output = new ArrayList<>();
+        for(String token : newTokens){
+            if(!Compiler.Symbol.contains(token) && !Compiler.Operator.contains(token)){
+                output.add("a" + count);
+                Compiler.table.put("a" + count, token);
+                count++;
+            }else{
+                output.add(token);
+            }
+        }
+
+        System.out.println("TABLE:");
+        Compiler.table.forEach((a, b) ->{
+            System.out.println("[ " + a + " ] | [ " + b + " ]");
+        });
+
+        System.out.println("OUTPUT:");
+        for(int i = 0; i < output.size(); i++){
+            System.out.print(output.get(i) + " ");
+        }
+        System.out.println();
+
+        Compiler.table.clear();
+
+        return "lexical complete";
     }
-    
+
+
+
     private boolean checkPrivateWord(String[] words) {
         for (String word : words) {
             if(Compiler.PrivateWord.contains(word))
                 return true;
         }
-        
+
         return false;
     }
-    
+
     //Este es el viejo mardicion me quiero morir
     /*public boolean analyze(String input) {
         declaring = false;

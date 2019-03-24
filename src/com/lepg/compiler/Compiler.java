@@ -13,6 +13,14 @@ public class Compiler {
     private final LexicalAnalyzer lexical = new LexicalAnalyzer();
     private final SyntacticalAnalyzer syntactical = new SyntacticalAnalyzer();
     private final SemanticalAnalyzer semantical = new SemanticalAnalyzer();
+
+    /*  Nunca está de más
+    private final int declaringAndAsigning = 0;
+    private final int declaring = 1;
+    private final int asigning = 2;
+    private final int expression = 3;
+    */
+    public static int statementType;
     
     public static final ArrayList<String> Number = new ArrayList<>();       //Numbers
     public static final ArrayList<String> Operator = new ArrayList<>();    //Operators
@@ -22,6 +30,7 @@ public class Compiler {
     
     public static HashMap<String, String> premises = new HashMap<>();
     public static Stack<String> stack = new Stack<>();
+    public static HashMap<String, String> table = new HashMap<>();
     
     public static ArrayList<Character> actVar = new ArrayList<>();
     public static HashMap<String, String> variables = new HashMap<>();
