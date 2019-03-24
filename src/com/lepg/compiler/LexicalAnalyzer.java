@@ -9,11 +9,79 @@ import java.util.ArrayList;
 
 public class LexicalAnalyzer {
     private String cache = "";
-    private boolean declaring = false;
+    //private boolean declaring = false;
+    
+    /*  Nunca está de más
+    private final int declaringAndAsigning = 0;
+    private final int declaring = 1;
+    private final int asigning = 2;
+    private final int statement = 3;
+    */
     
     private ArrayList<String> queue = new ArrayList<>();
     
-    public boolean analyze(String input) {
+    public String analyze(String input) {
+        int type = checkStatementType(input);
+        
+        if (type == -1)
+            return "";
+        
+        //switch aqui evaluando la verga dependiendo del tipo
+        
+        return "CULO VERDE";
+    }
+    
+    private int checkStatementType(String input) {
+        int x = input.indexOf('=');
+        
+        if(x == -1) { 
+            String a = input.substring(0, input.length() - 1);
+            a = a.trim();
+            String s[] = a.split(" ");
+            if(checkPrivateWord(s)) {
+                if(s.length == 2)
+                    return 1; //Declaring
+                
+                return -1;  //im chabista
+            }
+            return 3;  //Statement
+        }
+        /*
+        im fuckign retard  -1
+        let a = algo$       0
+        let a$              1
+        a = algo$           2
+        algo$               3
+        */
+        
+        else {
+            String s1 = input.substring(0, x);
+            String s[] = s1.split(" ");
+            
+            switch(s.length) {
+                case 1: 
+                    return 2;  //Asigning
+                    
+                case 2:
+                    return 0;  //Declaring and Asigning
+                    
+                default:
+                    return -1;  //im stupid
+            }
+        }
+    }
+    
+    private boolean checkPrivateWord(String[] words) {
+        for (String word : words) {
+            if(Compiler.PrivateWord.contains(word))
+                return true;
+        }
+        
+        return false;
+    }
+    
+    //Este es el viejo mardicion me quiero morir
+    /*public boolean analyze(String input) {
         declaring = false;
         cache = "";
         queue.clear();
@@ -158,6 +226,6 @@ public class LexicalAnalyzer {
         }
         return false;
         
-    }
+    }*/
         
 }

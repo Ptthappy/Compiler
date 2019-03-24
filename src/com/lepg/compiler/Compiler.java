@@ -60,8 +60,7 @@ public class Compiler {
     }
     
     public boolean compile(String input) {
-        int type;
-        if((type = lexical.analyze(input)) == -1)
+        if(lexical.analyze(input).equals(""))
             return false;
         
 //      if(!syntactical.analyze(input, type))
