@@ -21,6 +21,7 @@ public class Compiler {
     private final int expression = 3;
     */
     public static int statementType;
+    public static int par = 0;  //Cantidad de paréntesis
     
     public static final ArrayList<String> Number = new ArrayList<>();       //Numbers
     public static final ArrayList<String> Operator = new ArrayList<>();    //Operators
@@ -33,7 +34,7 @@ public class Compiler {
     public static HashMap<String, String> table = new HashMap<>();
     
     public static ArrayList<Character> actVar = new ArrayList<>();
-    public static HashMap<String, String> variables = new HashMap<>();
+    public static ArrayList<ArrayList<String>> variables = new ArrayList<>();
     
     public Compiler() {
         for (Character i = 48; i < 58; i++) { Number.add(i.toString()); }
@@ -72,8 +73,8 @@ public class Compiler {
         if(lexical.analyze(input).equals(""))
             return false;
         
-//      if(!syntactical.analyze(input, type))
-//          return false;
+        if(syntactical.analyze(input).equals(""))
+            return false;
         
 //      if(!semantical.analyze(input))
 //          return false;

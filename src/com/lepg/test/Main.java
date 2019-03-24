@@ -51,6 +51,13 @@ public class Main {
             System.out.println(i);
             
         }
+        
+        String in = "12(345678)9";
+        String in2 = in.substring(in.indexOf('(') + 1, in.indexOf(')'));
+        in = in.substring(0, in.indexOf('('));
+        System.out.println(in);
+        System.out.println(in2);
+        
     }
     
 }

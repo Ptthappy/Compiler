@@ -36,6 +36,8 @@ public class LexicalAnalyzer {
 
         if(openingCount != closingCount || endCharacter > 1) return "";
 
+        Compiler.par = openingCount;
+        
         ArrayList<String> tokens = new ArrayList<String>();
         Collections.addAll(tokens, input.trim().split(" "));
 
