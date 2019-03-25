@@ -52,6 +52,7 @@ public class SyntacticalAnalyzer {
         int next = 0;
         boolean par = false;
         String lastOperator = "";
+        
         if (Compiler.par > 0) {
             par = true;
             Compiler.par--;
@@ -93,6 +94,40 @@ public class SyntacticalAnalyzer {
         return 0;
     }
     
+    
+    private String[] compress(String[] shit, int index, String op) {
+        int length = shit.length;
+        String[] output = new String[length - 2];
+        process(shit[index - 1]);
+        process(shit[index + 1]);
+        solve(Integer.getInteger(shit[index - 1]), Integer.getInteger(shit[index - 1]), op);
+        
+        if (index >= 3) {
+            for (int i = 0; i < index - 1; i++) {
+                output[i] = shit[i];
+            }
+            
+            output[index - 1] = solve(Integer.getInteger(shit[index - 1]), 
+                    Integer.getInteger(shit[index - 1]), op).toString();
+            
+        }
+        
+        return null;
+    }
+    
+    private String process(String input) {
+        input = Compiler.table.get(input);
+        if (isVar(input)) {         //Si es variable
+            input = search(input);  //Busca la variable
+            if (input.equals(""))   //Si no la encuentra
+                return "";
+            else                    //Se la encuentra
+                return input;
+        } else {                    //Si no es variable
+            return input;
+        }
+    }
+    
     private int check(String[] in) {
         int index = 0;
         for (String x : in) {
@@ -111,16 +146,12 @@ public class SyntacticalAnalyzer {
         return -1;
     }
     
-    private Integer search(String varName) {
+    private String search(String varName) {
         return null;
     }
     
     private boolean isVar(String shit) {
         return false;
-    }
-    
-    private String[] compress(String[] shit, int index) {
-        return null;
     }
     
     private Integer solve(int value1, int value2, String op) {
