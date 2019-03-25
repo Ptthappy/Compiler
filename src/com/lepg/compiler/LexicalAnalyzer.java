@@ -235,14 +235,15 @@ public class LexicalAnalyzer {
         });
 
         System.out.println("OUTPUT:");
+        String out = "";
         for(int i = 0; i < output.size(); i++){
             System.out.print(output.get(i) + " ");
+            out += output.get(i) + " ";
         }
+        out = out.trim();
         System.out.println();
-
-        Compiler.table.clear();
-
-        return "lexical complete";
+        
+        return out;
     }
 
 

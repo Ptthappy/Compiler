@@ -70,11 +70,15 @@ public class Compiler {
     }
     
     public boolean compile(String input) {
-        if(lexical.analyze(input).equals(""))
+        String in = "";
+        if((in = lexical.analyze(input)).equals(""))
             return false;
         
-        if(syntactical.analyze(input).equals(""))
+        if(syntactical.analyze(in).equals("")) {
+            System.out.println("felisidades jajaj");
             return false;
+        }
+            
         
 //      if(!semantical.analyze(input))
 //          return false;
