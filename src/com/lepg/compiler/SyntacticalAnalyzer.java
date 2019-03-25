@@ -16,10 +16,12 @@ public class SyntacticalAnalyzer {
         String[] in = input.trim().split(" ");
         inLength = in.length;
         ArrayList<String> var = new ArrayList<>();
+        String varName = "";
+        Integer result = null;
         
         switch(Compiler.statementType) {
             case 0:
-                String varName = in[1];
+                varName = in[1];
                 varName = Compiler.table.get(varName);
                 if (!search(varName).equals(""))  //Revisa que la variable no haya sido creada
                     return "";
@@ -29,7 +31,7 @@ public class SyntacticalAnalyzer {
                 
                 input = input.substring(input.indexOf('=') + 1).trim();
                 input = input.substring(0, input.length() - 1).trim();
-                Integer result = calculate(input);
+                result = calculate(input);
                 if (result == null)
                     return "";
                 
@@ -39,19 +41,53 @@ public class SyntacticalAnalyzer {
                 return result.toString();
                 
             case 1:
-                break;
+                varName = in[1];
+                varName = Compiler.table.get(varName);
+                if (!search(varName).equals(""))  //Revisa que la variable no haya sido creada
+                    return "";
+                
+                var.add(Compiler.table.get(in[0]));
+                var.add(Compiler.table.get(in[1]));
+                var.add(Compiler.table.get(""));
+                Compiler.variables.add(var);
+                System.out.println("Variable added and not initializated");
+                return in[1];
                 
             case 2:
-                break;
+                varName = in[0];
+                varName = Compiler.table.get(varName);
+                if (search(varName).equals(""))  //Revisa que la variable haya sido creada
+                    return "";
+                
+                ArrayList<String> x = new ArrayList<>();
+                x = Compiler.variables.remove(getVarIndex(in[0]));
+                input = input.substring(input.indexOf('=') + 1).trim();
+                input = input.substring(0, input.length() - 1).trim();
+                result = calculate(input);
+                
+                x.set(2, result.toString());
+                Compiler.variables.add(x);
+                return result.toString();
                 
             case 3:
-                break;
+                result = calculate(input);
+                return result.toString();
                 
             default:
                 throw new RuntimeException();
         }
         
         return "";
+    }
+    
+    private int getVarIndex(String varName) {
+        for (int i = 0; i < Compiler.variables.size(); i++) {
+            ArrayList<String> x = null;
+            x = Compiler.variables.get(i);
+            if(varName.equals(x.get(1)))
+                return i;
+        }
+        return -1;
     }
     
     private Integer calculate(String in) {
@@ -68,8 +104,6 @@ public class SyntacticalAnalyzer {
             in = in.substring(0, in.indexOf(Compiler.Symbol.get(3)));
             in += calculate(in2).toString();
             System.out.println(in);
-            //next = calculate(in2);
-            //actualResult += next;
         }
         
         String[] lexems = in.split(" ");
