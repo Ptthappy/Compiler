@@ -71,11 +71,13 @@ public class Compiler {
     
     public boolean compile(String input) {
         String in = "";
-        if((in = lexical.analyze(input)).equals(""))
+        if((in = lexical.analyze(input)).equals("")) {
+            System.out.println("Thrown error in Lexical");
             return false;
+        }
         
         if(syntactical.analyze(in).equals("")) {
-            System.out.println("felisidades jajaj");
+            System.out.println("Thrown error in Syntactical");
             return false;
         }
             

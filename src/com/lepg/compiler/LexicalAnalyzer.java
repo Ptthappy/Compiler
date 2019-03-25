@@ -22,6 +22,12 @@ public class LexicalAnalyzer {
     private ArrayList<String> queue = new ArrayList<>();
     
     public String analyze(String input) {
+        if (input.trim().equals("")) {
+            return "";
+        }
+        
+        Compiler.table.clear();
+        
         int openingCount = 0;
         int closingCount = 0;
         int equalCount = 0;
@@ -47,13 +53,13 @@ public class LexicalAnalyzer {
         ArrayList<String> tokens = new ArrayList<String>();
         Collections.addAll(tokens, input.trim().split(" "));
 
-
+/*
         for(int i = 0; i < tokens.size(); i++){
             System.out.print(tokens.get(i) + " ");
         }
 
         System.out.println();
-
+*/
         ListIterator<String> iter = tokens.listIterator();
         ArrayList<String> newTokens = new ArrayList<>();
         while(iter.hasNext()){
@@ -97,19 +103,20 @@ public class LexicalAnalyzer {
                 newTokens.add(s);
             }
         }
+        /*
         for(int i = 0; i < newTokens.size(); i++){
             System.out.print(newTokens.get(i) + " ");
         }
 
         System.out.println();
-
+*/
         if(newTokens.contains("=")){
             int equalIndex = newTokens.indexOf("=");
             if(equalIndex == 0 || equalIndex > 2){
                 return "";
             }else{
                 if(equalIndex == 1){
-                    System.out.println("Assigning");
+                    //System.out.println("Assigning");
                     Compiler.statementType = 2; //assigning
 
                     String variableName = newTokens.get(0);
@@ -128,7 +135,7 @@ public class LexicalAnalyzer {
 
 
                 }else if(equalIndex == 2){
-                    System.out.println("Declaring and Assigning");
+                    //System.out.println("Declaring and Assigning");
                     Compiler.statementType = 0; //declaring and assigning
 
                     String variableName = newTokens.get(1);
@@ -155,7 +162,7 @@ public class LexicalAnalyzer {
 
         }else{
             if(newTokens.size() == 3){
-                System.out.println("Declaring");
+                //System.out.println("Declaring");
                 Compiler.statementType = 1; //declaring
 
                 String reservedWord = newTokens.get(0);
@@ -176,7 +183,7 @@ public class LexicalAnalyzer {
                 }
 
             }else if(newTokens.size() > 3 || newTokens.size() <= 2) {
-                System.out.println("Expression");
+                //System.out.println("Expression");
                 Compiler.statementType = 3; //expression
                 if(Compiler.PrivateWord.contains(newTokens.get(0))){
                     return "";
@@ -229,9 +236,9 @@ public class LexicalAnalyzer {
             }
         }
 
-        System.out.println("TABLE:");
+        //System.out.println("TABLE:");
         Compiler.table.forEach((a, b) ->{
-            System.out.println("[ " + a + " ] | [ " + b + " ]");
+            //System.out.println("[ " + a + " ] | [ " + b + " ]");
         });
 
         System.out.println("OUTPUT:");

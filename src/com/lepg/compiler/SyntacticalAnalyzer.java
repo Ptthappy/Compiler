@@ -76,8 +76,6 @@ public class SyntacticalAnalyzer {
             default:
                 throw new RuntimeException();
         }
-        
-        return "";
     }
     
     private int getVarIndex(String varName) {
@@ -101,9 +99,9 @@ public class SyntacticalAnalyzer {
             par = true;
             Compiler.par--;
             String in2 = in.substring(in.indexOf(Compiler.Symbol.get(3)) + 1, in.lastIndexOf(Compiler.Symbol.get(4))).trim();
+            String in3 = in.substring(in.lastIndexOf(Compiler.Symbol.get(4)) + 1);
             in = in.substring(0, in.indexOf(Compiler.Symbol.get(3)));
-            in += calculate(in2).toString();
-            System.out.println(in);
+            in += calculate(in2).toString() + in3;
         }
         
         String[] lexems = in.split(" ");
@@ -123,7 +121,11 @@ public class SyntacticalAnalyzer {
         }
         
         if (lexems.length == 1) {
-            return Integer.parseInt(lexems[0]);
+            lexems[0] = process(lexems[0]);
+            if (lexems[0].equals(""))
+                return null;
+            else
+                return Integer.parseInt(lexems[0]);
         } else {
             
             for (int i = 0; i < lexems.length; i++) {  //lastOperator
@@ -152,8 +154,8 @@ public class SyntacticalAnalyzer {
     private String[] compress(String[] shit, int index, String op) {
         int length = shit.length;
         String[] output = new String[length - 2];
-        System.out.println(shit[index - 1] + "a");
-        System.out.println(shit[index + 1] + "b");
+        System.out.println(shit[index - 1]);
+        System.out.println(shit[index + 1]);
         System.out.println(shit[index]);
         shit[index - 1] = process(shit[index - 1]);
         shit[index + 1] = process(shit[index + 1]);
@@ -188,6 +190,9 @@ public class SyntacticalAnalyzer {
         String a = input.charAt(0) + "";
         if (!Compiler.Number.contains(a))
             input = Compiler.table.get(input);
+        
+        if (input == null)
+            return "";
         
         if (isVar(input)) {         //Si es variable
             input = search(input);  //Busca la variable
