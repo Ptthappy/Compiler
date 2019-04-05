@@ -11,8 +11,10 @@ import java.util.ArrayList;
 public class SyntacticalAnalyzer {
     public int inLength;
     public String opFound = "";
+    public boolean error = false;
     
     public String analyze(String input) {
+        error = false;
         String[] in = input.trim().split(" ");
         inLength = in.length;
         ArrayList<String> var = new ArrayList<>();
@@ -23,8 +25,10 @@ public class SyntacticalAnalyzer {
             case 0:
                 varName = in[1];
                 varName = Compiler.table.get(varName);
-                if (!search(varName).equals(""))  //Revisa que la variable no haya sido creada
+                if (!search(varName).equals("null")) { //Revisa que la variable no haya sido creada
+                    System.out.println("Variable is already defined");
                     return "";
+                }
                 
                 var.add(Compiler.table.get(in[0]));
                 var.add(Compiler.table.get(in[1]));
@@ -43,12 +47,12 @@ public class SyntacticalAnalyzer {
             case 1:
                 varName = in[1];
                 varName = Compiler.table.get(varName);
-                if (!search(varName).equals(""))  //Revisa que la variable no haya sido creada
+                if (!search(varName).equals("null"))  //Revisa que la variable no haya sido creada
                     return "";
                 
                 var.add(Compiler.table.get(in[0]));
                 var.add(Compiler.table.get(in[1]));
-                var.add(Compiler.table.get(""));
+                var.add("");
                 Compiler.variables.add(var);
                 System.out.println("Variable added and not initializated");
                 return in[1];
@@ -56,21 +60,30 @@ public class SyntacticalAnalyzer {
             case 2:
                 varName = in[0];
                 varName = Compiler.table.get(varName);
-                if (search(varName).equals(""))  //Revisa que la variable haya sido creada
+                if (search(varName).equals("null"))  { //Revisa que la variable haya sido creada 
                     return "";
+                }
                 
-                ArrayList<String> x = new ArrayList<>();
-                x = Compiler.variables.remove(getVarIndex(in[0]));
+                System.out.println(Compiler.variables);
+                
+                
+                ArrayList<String> x = Compiler.variables.get(getVarIndex(varName));
                 input = input.substring(input.indexOf('=') + 1).trim();
                 input = input.substring(0, input.length() - 1).trim();
                 result = calculate(input);
+                if (result == null)
+                    return "";
                 
                 x.set(2, result.toString());
+                Compiler.variables.remove(getVarIndex(varName));
                 Compiler.variables.add(x);
                 return result.toString();
                 
             case 3:
                 result = calculate(input);
+                if (result == null)
+                    return "";
+                
                 return result.toString();
                 
             default:
@@ -80,8 +93,8 @@ public class SyntacticalAnalyzer {
     
     private int getVarIndex(String varName) {
         for (int i = 0; i < Compiler.variables.size(); i++) {
-            ArrayList<String> x = null;
-            x = Compiler.variables.get(i);
+            ArrayList<String> x = Compiler.variables.get(i);
+            
             if(varName.equals(x.get(1)))
                 return i;
         }
@@ -131,6 +144,9 @@ public class SyntacticalAnalyzer {
             for (int i = 0; i < lexems.length; i++) {  //lastOperator
                 if (isLexem) {
                     lexems[i] = process(lexems[i]);
+                    if (lexems[i].equals(""))
+                        return null;
+                    
                     if(lastOperator.equals("")) {
                         actualResult += Integer.parseInt(lexems[i]);
                         System.out.println(actualResult);
@@ -196,7 +212,7 @@ public class SyntacticalAnalyzer {
         
         if (isVar(input)) {         //Si es variable
             input = search(input);  //Busca la variable
-            if (input.equals(""))   //Si no la encuentra
+            if (input.equals("null"))   //Si no la encuentra
                 return "";
             else {                  //Si la encuentra
                 System.out.println("Gettear el valor de la variable");
@@ -231,12 +247,14 @@ public class SyntacticalAnalyzer {
     
     private String search(String varName) {
         for (int i = 0; i < Compiler.variables.size(); i++) {
-            ArrayList<String> x = null;
-            x = Compiler.variables.get(i);
+            ArrayList<String> x = Compiler.variables.get(i);
+            System.out.println(x.get(0));
+            System.out.println(x.get(1));
+            System.out.println(x.get(2));
             if(varName.equals(x.get(1)))
                 return x.get(2);
         }
-        return "";
+        return "null";
     }
     
     private boolean isVar(String shit) {
