@@ -64,9 +64,6 @@ public class SyntacticalAnalyzer {
                     return "";
                 }
                 
-                System.out.println(Compiler.variables);
-                
-                
                 ArrayList<String> x = Compiler.variables.get(getVarIndex(varName));
                 input = input.substring(input.indexOf('=') + 1).trim();
                 input = input.substring(0, input.length() - 1).trim();
@@ -118,11 +115,6 @@ public class SyntacticalAnalyzer {
         }
         
         String[] lexems = in.split(" ");
-        
-        if (lexems.length == 1) {
-            lexems[0] = Compiler.table.get(lexems[0]);
-        }
-            
         
         int x = 0;
         while((x = check(lexems)) != -1) {
