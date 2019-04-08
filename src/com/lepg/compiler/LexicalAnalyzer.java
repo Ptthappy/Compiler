@@ -241,14 +241,14 @@ public class LexicalAnalyzer {
             //System.out.println("[ " + a + " ] | [ " + b + " ]");
         });
 
-        System.out.println("OUTPUT:");
+        //System.out.println("OUTPUT:");
         String out = "";
         for(int i = 0; i < output.size(); i++){
-            System.out.print(output.get(i) + " ");
+            //System.out.print(output.get(i) + " ");
             out += output.get(i) + " ";
         }
         out = out.trim();
-        System.out.println();
+        //System.out.println();
         
         return out;
     }

@@ -74,6 +74,7 @@ public class SyntacticalAnalyzer {
                 x.set(2, result.toString());
                 Compiler.variables.remove(getVarIndex(varName));
                 Compiler.variables.add(x);
+                System.out.println("Result: " + result);
                 return result.toString();
                 
             case 3:
@@ -104,6 +105,7 @@ public class SyntacticalAnalyzer {
         int next = 0;
         boolean par = false;
         String lastOperator = "";
+        boolean isNeg = false;
         
         if (Compiler.par > 0) {
             par = true;
@@ -115,7 +117,14 @@ public class SyntacticalAnalyzer {
         }
         
         String[] lexems = in.split(" ");
-        
+        if (lexems[0].equals(Compiler.Operator.get(1))) {
+            String[] y = new String[lexems.length - 1];
+            isNeg = true;
+            for (int i = 1; i < lexems.length; i++)
+                y[i - 1] = lexems[i];
+            lexems = y;
+        }
+            
         int x = 0;
         while((x = check(lexems)) != -1) {
             for (int i = 0; i < lexems.length; i++) {
@@ -129,8 +138,12 @@ public class SyntacticalAnalyzer {
             lexems[0] = process(lexems[0]);
             if (lexems[0].equals(""))
                 return null;
-            else
+            else {
+                if (isNeg)
+                    return Integer.parseInt(lexems[0]) * -1;
                 return Integer.parseInt(lexems[0]);
+            }
+                
         } else {
             
             for (int i = 0; i < lexems.length; i++) {  //lastOperator
@@ -141,11 +154,9 @@ public class SyntacticalAnalyzer {
                     
                     if(lastOperator.equals("")) {
                         actualResult += Integer.parseInt(lexems[i]);
-                        System.out.println(actualResult);
                     }
                     else {
                         actualResult = solve(actualResult, Integer.parseInt(lexems[i]), lastOperator);
-                        System.out.println(actualResult);
                     }
                     
                     isLexem = false;
@@ -155,6 +166,9 @@ public class SyntacticalAnalyzer {
                 }
             }
         }
+        if (isNeg)
+            actualResult *= -1;
+        
         return actualResult;
     }
     
@@ -162,9 +176,6 @@ public class SyntacticalAnalyzer {
     private String[] compress(String[] shit, int index, String op) {
         int length = shit.length;
         String[] output = new String[length - 2];
-        System.out.println(shit[index - 1]);
-        System.out.println(shit[index + 1]);
-        System.out.println(shit[index]);
         shit[index - 1] = process(shit[index - 1]);
         shit[index + 1] = process(shit[index + 1]);
         
@@ -207,7 +218,6 @@ public class SyntacticalAnalyzer {
             if (input.equals("null"))   //Si no la encuentra
                 return "";
             else {                  //Si la encuentra
-                System.out.println("Gettear el valor de la variable");
                 return input;
             }
         } else {                    //Si no es variable
@@ -240,9 +250,7 @@ public class SyntacticalAnalyzer {
     private String search(String varName) {
         for (int i = 0; i < Compiler.variables.size(); i++) {
             ArrayList<String> x = Compiler.variables.get(i);
-            System.out.println(x.get(0));
-            System.out.println(x.get(1));
-            System.out.println(x.get(2));
+            
             if(varName.equals(x.get(1)))
                 return x.get(2);
         }
