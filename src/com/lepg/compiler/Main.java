@@ -26,6 +26,7 @@ public class Main {
                 System.out.println(compiler.compile(input));
                 System.out.println();
             } catch (Exception e) {
+                e.printStackTrace();
                 System.err.println("false");
             }
         } while(true);
