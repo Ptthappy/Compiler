@@ -3,6 +3,7 @@ package com.lepg.compiler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
+import java.io.FileNotFoundException;
 
 /**
  * @author Ptthappy
@@ -12,7 +13,7 @@ import java.util.Stack;
 public class Compiler {
     private final LexicalAnalyzer lexical = new LexicalAnalyzer();
     private final SyntacticalAnalyzer syntactical = new SyntacticalAnalyzer();
-    private final SemanticalAnalyzer semantical = new SemanticalAnalyzer();
+    private final SemanticalAnalyzer semantical;
 
     /*  Nunca está de más
     private final int declaringAndAsigning = 0;
@@ -37,7 +38,9 @@ public class Compiler {
     protected static ArrayList<Character> actVar = new ArrayList<>();
     protected static ArrayList<ArrayList<String>> variables = new ArrayList<>();
     
-    public Compiler() {
+    public Compiler() throws FileNotFoundException {
+        semantical = new SemanticalAnalyzer();
+        
         for (Character i = 48; i < 58; i++) { Number.add(i.toString()); }
         
         Operator.add("+");
@@ -71,6 +74,9 @@ public class Compiler {
     protected  boolean compile(String input) {
         this.par = 0;
         String in = "";
+        
+        semantical.testCodeGenerator("a6a5a4a3a2a1+++++");
+        
         if((in = lexical.analyze(input)).equals("")) {
             System.out.println("Thrown error in Lexical");
             return false;
@@ -81,8 +87,8 @@ public class Compiler {
             return false;
         }
         
-        if(!semantical.analyze(in) == false)
-            return false;
+//        if(!semantical.analyze(in) == false)
+//            return false;
 
         return true;
     }

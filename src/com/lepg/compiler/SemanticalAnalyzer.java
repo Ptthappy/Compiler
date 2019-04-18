@@ -1,6 +1,9 @@
 package com.lepg.compiler;
 
-import java.io.OutputStream;
+import java.io.FileOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Stack;
 
 /**
@@ -10,16 +13,44 @@ import java.util.Stack;
 
 public class SemanticalAnalyzer {
     private Stack<String> stack = null;
+    private FileOutputStream out;
     protected int par;
+    private String STOVar = "";
     
-    SemanticalAnalyzer() {
-        //Asignarle el outputString a un .txt que va a utilizar y sobreescribir
-        //el codeGenerator y asignarle la fecha como cabecera
+    SemanticalAnalyzer() throws FileNotFoundException {
+        if (!(new File("C:\\CompilerOutput").exists())) {
+            System.out.println("Folder doesn't exist. Creating Folder");
+            
+            if(new File("C:\\CompilerOutput").mkdir()) {
+                System.out.println("Folder created");
+            } else {
+                System.err.println("Couldn't create folder");
+                System.exit(0);
+            }
+        }
+        if (!(new File("C:\\CompilerOutput\\output.txt").exists())) {
+                System.out.println("File does't exist. Creating file...");
+                try {
+                    new File("C:\\CompilerOutput\\output.txt").createNewFile();
+                    System.out.println("File created");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.err.println("Couldn't create file");
+                    System.exit(0);
+                }
+            }
+        
+        out = new FileOutputStream("C:\\CompilerOutput\\output.txt");
         stack = new Stack<>();
+    }
+    
+    public void testCodeGenerator(String input) {
+        generateCode(input);
     }
     
     public boolean analyze(String input) {
         System.out.println();
+        input = input.substring(0, input.length() - 1).trim();  // EPA CIUDADANO -> Quitar el $
         this.par = Compiler.par;
         System.out.println(this.par);
 //        String[] in = input.split(" ");
@@ -49,13 +80,48 @@ public class SemanticalAnalyzer {
             //Llamarse recursivamente hasta que no queden paréntesis
             System.out.println(input2);
             
-        } 
+        }
+        /**
+         * ESTO SE HACE ARRIBA****
+         * a1 + a2 - a3
+         * -> a2a1+ - a3
+         * -> a3a2a1+-
+         * a3a2a1+-
+         * 
+         * 
+         * Esto se hace en codeGenerator
+         * -> ADD a3 a2 x1
+         * -> SUB x1 a1 x2
+         *  - Verifica que ya no queden términos (true) -
+         * -> return (porque no se almacenó ninguna variable)
+         * 
+         * a1 = a2 + a3 - a4
+         * -> a2 + a3 - a4 (separa a1 del string completo y cuando termine el procedimiento vuelve a salir xd)
+         * ...
+         * -> ADD a3 a2 x1
+         * -> SUB x1 a1 x2 
+         * -> STO x2 a1
+         * 
+        */
         //Generar el string
+        // a5a4a3a2a1+++-
+        
         return output;
     }
     
     protected boolean generateCode(String string) {
         //Generar el código ASM y pasarlo a un archivo .txt
+        String operands = "";
+        String operators = "";
+        for (int i = 0; i < string.length(); i++) {
+            if( Compiler.Operator.contains(((Character)string.charAt(i)).toString()) ) {
+                operands = string.substring(0, i);
+                operators = string.substring(i, string.length());
+                break;
+            }
+            
+        }
+        System.out.println("Operands: " + operands + "\nOperators: " + operators);
         return false;
     }
     
