@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Stack;
+import java.util.Date;
 
 /**
  * @author Ptthappy
@@ -18,7 +19,7 @@ public class SemanticalAnalyzer {
     private String STOVar = "";
     private String res = "";
     
-    SemanticalAnalyzer() throws FileNotFoundException {
+    SemanticalAnalyzer() throws FileNotFoundException, IOException {
         if (!(new File("C:\\CompilerOutput").exists())) {
             System.out.println("Folder doesn't exist. Creating Folder");
             
@@ -40,8 +41,10 @@ public class SemanticalAnalyzer {
                     System.exit(0);
                 }
             }
-        
+        Date date = new Date();
         out = new FileOutputStream("C:\\CompilerOutput\\output.txt");
+        out.write((date.getDate() + "/" + (date.getMonth() + 1) + "/" + (date.getYear() + 
+                1900) + ": " + date.getHours() + ":" + date.getMinutes()).getBytes());
         stack = new Stack<>();
     }
     

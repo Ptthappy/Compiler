@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * @author Ptthappy
@@ -38,7 +39,7 @@ public class Compiler {
     protected static ArrayList<Character> actVar = new ArrayList<>();
     protected static ArrayList<ArrayList<String>> variables = new ArrayList<>();
     
-    public Compiler() throws FileNotFoundException {
+    public Compiler() throws FileNotFoundException, IOException {
         semantical = new SemanticalAnalyzer();
         
         for (Character i = 48; i < 58; i++) { Number.add(i.toString()); }
