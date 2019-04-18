@@ -20,21 +20,22 @@ public class Compiler {
     private final int asigning = 2;
     private final int expression = 3;
     */
-    public static int statementType;
-    public static int par = 0;  //Cantidad de paréntesis
     
-    public static final ArrayList<String> Number = new ArrayList<>();       //Numbers
-    public static final ArrayList<String> Operator = new ArrayList<>();    //Operators
-    public static final ArrayList<String> PrivateWord = new ArrayList<>();    //Private language's words
-    public static final ArrayList<String> Letter = new ArrayList<>();      //Letters
-    public static final ArrayList<String> Symbol = new ArrayList<>();      //All the other symbols
+    protected static int statementType;
+    protected static int par = 0;  //Cantidad de paréntesis
     
-    public static HashMap<String, String> premises = new HashMap<>();
-    public static Stack<String> stack = new Stack<>();
-    public static HashMap<String, String> table = new HashMap<>();
+    protected static final ArrayList<String> Number = new ArrayList<>();       //Numbers
+    protected static final ArrayList<String> Operator = new ArrayList<>();    //Operators
+    protected static final ArrayList<String> PrivateWord = new ArrayList<>();    //Private language's words
+    protected static final ArrayList<String> Letter = new ArrayList<>();      //Letters
+    protected static final ArrayList<String> Symbol = new ArrayList<>();      //All the other symbols
     
-    public static ArrayList<Character> actVar = new ArrayList<>();
-    public static ArrayList<ArrayList<String>> variables = new ArrayList<>();
+    protected static HashMap<String, String> premises = new HashMap<>();
+    protected static Stack<String> stack = new Stack<>();
+    protected static HashMap<String, String> table = new HashMap<>();
+    
+    protected static ArrayList<Character> actVar = new ArrayList<>();
+    protected static ArrayList<ArrayList<String>> variables = new ArrayList<>();
     
     public Compiler() {
         for (Character i = 48; i < 58; i++) { Number.add(i.toString()); }
@@ -54,8 +55,6 @@ public class Compiler {
         PrivateWord.add("boolean");
         PrivateWord.add("char");
         PrivateWord.add("string");
-        PrivateWord.add("var");
-        PrivateWord.add("let");
         
         for (Character i = 65; i < 123; i++) { //90 - 97
             Letter.add(i.toString());
@@ -69,7 +68,8 @@ public class Compiler {
         Symbol.add(")");
     }
     
-    public boolean compile(String input) {
+    protected  boolean compile(String input) {
+        this.par = 0;
         String in = "";
         if((in = lexical.analyze(input)).equals("")) {
             System.out.println("Thrown error in Lexical");
@@ -80,10 +80,9 @@ public class Compiler {
             System.out.println("Thrown error in Syntactical");
             return false;
         }
-            
         
-//      if(!semantical.analyze(input))
-//          return false;
+        if(!semantical.analyze(in) == false)
+            return false;
 
         return true;
     }

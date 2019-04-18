@@ -9,12 +9,14 @@ import java.util.ArrayList;
 
 
 public class SyntacticalAnalyzer {
-    public int inLength;
-    public String opFound = "";
-    public boolean error = false;
+    protected int inLength;
+    protected String opFound = "";
+    protected boolean error = false;
+    protected int par;
     
     public String analyze(String input) {
         error = false;
+        this.par = Compiler.par;
         String[] in = input.trim().split(" ");
         inLength = in.length;
         ArrayList<String> var = new ArrayList<>();
@@ -41,7 +43,7 @@ public class SyntacticalAnalyzer {
                 
                 var.add(result.toString());
                 Compiler.variables.add(var);
-                System.out.println("Result: " + result);
+                System.out.println(result);
                 return result.toString();
                 
             case 1:
@@ -74,14 +76,14 @@ public class SyntacticalAnalyzer {
                 x.set(2, result.toString());
                 Compiler.variables.remove(getVarIndex(varName));
                 Compiler.variables.add(x);
-                System.out.println("Result: " + result);
+                System.out.println(result);
                 return result.toString();
                 
             case 3:
                 result = calculate(input);
                 if (result == null)
                     return "";
-                
+                System.out.println(result);
                 return result.toString();
                 
             default:
@@ -107,9 +109,9 @@ public class SyntacticalAnalyzer {
         String lastOperator = "";
         boolean isNeg = false;
         
-        if (Compiler.par > 0) {
+        if (this.par > 0) {
             par = true;
-            Compiler.par--;
+            this.par--;
             String in2 = in.substring(in.indexOf(Compiler.Symbol.get(3)) + 1, in.lastIndexOf(Compiler.Symbol.get(4))).trim();
             String in3 = in.substring(in.lastIndexOf(Compiler.Symbol.get(4)) + 1);
             in = in.substring(0, in.indexOf(Compiler.Symbol.get(3)));
@@ -257,7 +259,7 @@ public class SyntacticalAnalyzer {
         return "null";
     }
     
-    private boolean isVar(String shit) {
+    protected boolean isVar(String shit) {
         Character c = shit.charAt(0);
         if(Compiler.Letter.contains(c.toString()))
             return true;
