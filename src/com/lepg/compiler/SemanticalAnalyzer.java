@@ -16,6 +16,7 @@ public class SemanticalAnalyzer {
     private FileOutputStream out;
     protected int par;
     private String STOVar = "";
+    private String res = "";
     
     SemanticalAnalyzer() throws FileNotFoundException {
         if (!(new File("C:\\CompilerOutput").exists())) {
@@ -53,6 +54,7 @@ public class SemanticalAnalyzer {
         input = input.substring(0, input.length() - 1).trim();  // EPA CIUDADANO -> Quitar el $
         this.par = Compiler.par;
         this.STOVar = "";
+        this.res = "";
         System.out.println(this.par);
 
         switch(Compiler.statementType) {  //Maneja el lado izquierdo del statement
@@ -148,14 +150,90 @@ public class SemanticalAnalyzer {
         String operators = "";
         for (int i = 0; i < string.length(); i++) {
             if( Compiler.Operator.contains(((Character)string.charAt(i)).toString()) ) {
-                operands = string.substring(0, i);
-                operators = string.substring(i, string.length());
+                operands = string.substring(0, i).trim();
+                operators = string.substring(i, string.length()).trim();
                 break;
             }
             
         }
+        
+        int index = 1;
         System.out.println("Operands: " + operands + "\nOperators: " + operators);
-        return false;
+        this.STOVar = "a0";
+        while(!operators.equals("")) {
+            String action = "";
+            String s1 = getLastOperand(operands);
+            operands = operands.substring(0, operands.length() - 2);
+            
+            String s2 = getLastOperand(operands);
+            operands = operands.substring(0, operands.length() - 2);
+            
+            String op = getFirstOperator(operators);
+            operators = operators.substring(1);
+            
+            String res = "x" + index;
+            operands = concatOperands(operands, res);
+            
+            switch(op) {
+                case "+":
+                    action = "ADD";
+                    break;
+                    
+                case "-":
+                    action = "SUB";
+                    break;
+                    
+                case "*":
+                    action = "MUL";
+                    break;
+                    
+                case "/":
+                case "%":
+                    action = "DIV";
+                    break;
+                    
+                default:
+                    throw new RuntimeException();
+            }
+            String output = action + "\t" + s1 + "\t" + s2 + "\t" + res;
+            this.res = res;
+            System.out.println(output);
+            try {
+                out.write(output.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+//            System.out.println(s1 + "\t" + s2 + "\t" + op + "\t" + res + "\t");
+//            System.out.println(operands);
+//            System.out.println(operators);
+            index++;
+        }
+        
+        if (!STOVar.equals("")) {
+            System.out.println("STO\t" + this.res + "\t" + STOVar);
+            try {
+                out.write(("STO\t" + this.res + "\t" + STOVar).getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+    
+    private String getLastOperand(String string) {
+        String s = string.substring(string.length() - 2);
+//        string = string.substring(0, string.length() - 3);
+        return s;
+    }
+    
+    private String getFirstOperator(String string) {
+        String s = string.substring(0, 1);
+//        string = string.substring(1);
+        return s;
+    }
+    
+    private String concatOperands(String string, String operand) {
+        return string + operand;
     }
     
 //    2 + 5 * 3
