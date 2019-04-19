@@ -4,7 +4,6 @@ import java.io.FileOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -162,19 +161,17 @@ public class SemanticalAnalyzer {
         this.STOVar = "a0";
         while(!operators.equals("")) {
             String action = "";
-            String s1 = getLastOperand(operands);
-            operands = operands.substring(0, operands.length() - 2);
+            while(stack.size() < 2) {
+                stack.push(getLastOperand(operands));
+                operands = operands.substring(0, operands.length() - 2);
+            }
             
-            String s2 = getLastOperand(operands);
-            operands = operands.substring(0, operands.length() - 2);
-            
-            String op = getFirstOperator(operators);
+            stack.push(getFirstOperator(operators));
             operators = operators.substring(1);
             
             String res = "x" + index;
-            operands = concatOperands(operands, res);
             
-            switch(op) {
+            switch(stack.pop()) {
                 case "+":
                     action = "ADD";
                     break;
@@ -195,8 +192,8 @@ public class SemanticalAnalyzer {
                 default:
                     throw new RuntimeException();
             }
-            String output = action + "\t" + s1 + "\t" + s2 + "\t" + res;
-            this.res = res;
+            String output = action + "\t" + stack.pop() + "\t" + stack.pop() + "\t" + res;
+            stack.push(res);
             System.out.println(output);
             try {
                 out.write(output.getBytes());
@@ -213,7 +210,7 @@ public class SemanticalAnalyzer {
         if (!STOVar.equals("")) {
             System.out.println("STO\t" + this.res + "\t" + STOVar);
             try {
-                out.write(("STO\t" + this.res + "\t" + STOVar).getBytes());
+                out.write(("STO\t" + stack.pop() + "\t" + STOVar).getBytes());
                 out.write("\n\n".getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -231,11 +228,7 @@ public class SemanticalAnalyzer {
         String s = string.substring(0, 1);
         return s;
     }
-    
-    private String concatOperands(String string, String operand) {
-        return string + operand;
-    }
-    
+        
     public void close() {
         try {
             out.close();
