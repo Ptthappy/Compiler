@@ -4,8 +4,8 @@ import java.io.FileOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Stack;
-import java.util.Date;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * @author Ptthappy
@@ -119,6 +119,39 @@ public class SemanticalAnalyzer {
 //            System.out.println("2: " + input.substring(x1));
             System.out.println("input: " + input);
         }
+
+        //wtf is this shit
+        System.out.println("que es esto jajaja " + input);
+
+        //AAAAAAAAA YA ENTENDI XD creo
+
+        String[] split = input.split(" ");
+        List<String> mid = Arrays.asList(split);
+        ArrayList<String> tokens = new ArrayList<>();
+        tokens.addAll(mid);
+
+        int index;
+
+        String token = "";
+        String salida = "";
+        while(!tokens.isEmpty()){
+            token = tokens.remove(0);
+            if(!Compiler.Operator.contains(token)){
+                salida += token;
+                if(!stack.empty()){
+                    salida += stack.pop();
+                }
+            }else{
+                stack.push(token);
+            }
+
+        }
+        System.out.println(salida);
+
+        stack.clear();
+        //csm quisiera estar haciendo el manga reader
+
+
         /**
          * ESTO SE HACE ARRIBA****
          * a1 + a2 - a3

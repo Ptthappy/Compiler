@@ -88,8 +88,8 @@ public class Compiler {
             return false;
         }
         
-//        if(!semantical.analyze(in) == false)
-//            return false;
+        if(!semantical.analyze(in) == false)
+           return false;
 
         return true;
     }
