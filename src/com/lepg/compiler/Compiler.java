@@ -76,7 +76,7 @@ public class Compiler {
         this.par = 0;
         String in = "";
         
-        semantical.testCodeGenerator("a6a5a4a3a2a1+++++");
+//        semantical.testCodeGenerator("a6a5a4a3a2a1+++++");
         
         if((in = lexical.analyze(input)).equals("")) {
             System.out.println("Thrown error in Lexical");
@@ -92,5 +92,9 @@ public class Compiler {
            return false;
 
         return true;
+    }
+    
+    public void close() {
+        semantical.close();
     }
 }

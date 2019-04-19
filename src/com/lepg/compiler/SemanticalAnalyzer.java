@@ -42,9 +42,11 @@ public class SemanticalAnalyzer {
                 }
             }
         Date date = new Date();
-        out = new FileOutputStream("C:\\CompilerOutput\\output.txt");
+        out = new FileOutputStream("C:\\CompilerOutput\\output.txt", true);
         out.write((date.getDate() + "/" + (date.getMonth() + 1) + "/" + (date.getYear() + 
-                1900) + ": " + date.getHours() + ":" + date.getMinutes()).getBytes());
+                1900) + ": " + date.getHours() + ":" + 
+                (date.getMinutes() > 9 ? date.getMinutes() : "0" + date.getMinutes()) ).getBytes());
+        out.write("\n\n".getBytes());
         stack = new Stack<>();
     }
     
@@ -103,8 +105,6 @@ public class SemanticalAnalyzer {
                 input2 = input2.substring(0, (x1 = input2.indexOf(Compiler.Symbol.get(4))) - 1);
                 System.out.println(input2);
             } else {
-                // a1 + a2 + (a3 + a4 - (a5 * a6)) + 2
-                // a1 + a2 + (a3 + a4) - (a5 * a6) + 2
                 if (input2.indexOf(Compiler.Symbol.get(3)) < input2.indexOf(Compiler.Symbol.get(4))) { //Anidados
                     input2 = input2.substring(0, (x1 = input2.lastIndexOf(Compiler.Symbol.get(4))) - 1);
                     input2 = resolve(input2);
@@ -114,17 +114,9 @@ public class SemanticalAnalyzer {
             }
             x1 += 2;
             input = input.substring(0, x0) + input2 + input.substring(x1);
-//            System.out.println("0: " + input.substring(0, x0));
-//            System.out.println("1:" + input2);
-//            System.out.println("2: " + input.substring(x1));
             System.out.println("input: " + input);
         }
-
-        //wtf is this shit
-        System.out.println("que es esto jajaja " + input);
-
-        //AAAAAAAAA YA ENTENDI XD creo
-
+        
         String[] split = input.split(" ");
         List<String> mid = Arrays.asList(split);
         ArrayList<String> tokens = new ArrayList<>();
@@ -133,49 +125,21 @@ public class SemanticalAnalyzer {
         int index;
 
         String token = "";
-        String salida = "";
         while(!tokens.isEmpty()){
             token = tokens.remove(0);
             if(!Compiler.Operator.contains(token)){
-                salida += token;
+                output += token;
                 if(!stack.empty()){
-                    salida += stack.pop();
+                    output += stack.pop();
                 }
             }else{
                 stack.push(token);
             }
 
         }
-        System.out.println(salida);
+        System.out.println(output);
 
         stack.clear();
-        //csm quisiera estar haciendo el manga reader
-
-
-        /**
-         * ESTO SE HACE ARRIBA****
-         * a1 + a2 - a3
-         * -> a2a1+ - a3
-         * -> a3a2a1+-
-         * a3a2a1+-
-         * 
-         * 
-         * Esto se hace en codeGenerator
-         * -> ADD a3 a2 x1
-         * -> SUB x1 a1 x2
-         *  - Verifica que ya no queden términos (true) -
-         * -> return (porque no se almacenó ninguna variable)
-         * 
-         * a1 = a2 + a3 - a4
-         * -> a2 + a3 - a4 (separa a1 del string completo y cuando termine el procedimiento vuelve a salir xd)
-         * ...
-         * -> ADD a3 a2 x1
-         * -> SUB x1 a1 x2 
-         * -> STO x2 a1
-         * 
-        */
-        //Generar el string
-        // a5a4a3a2a1+++-
         
         return output;
     }
@@ -236,6 +200,7 @@ public class SemanticalAnalyzer {
             System.out.println(output);
             try {
                 out.write(output.getBytes());
+                out.write("\n".getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -249,6 +214,7 @@ public class SemanticalAnalyzer {
             System.out.println("STO\t" + this.res + "\t" + STOVar);
             try {
                 out.write(("STO\t" + this.res + "\t" + STOVar).getBytes());
+                out.write("\n\n".getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -258,13 +224,11 @@ public class SemanticalAnalyzer {
     
     private String getLastOperand(String string) {
         String s = string.substring(string.length() - 2);
-//        string = string.substring(0, string.length() - 3);
         return s;
     }
     
     private String getFirstOperator(String string) {
         String s = string.substring(0, 1);
-//        string = string.substring(1);
         return s;
     }
     
@@ -272,11 +236,12 @@ public class SemanticalAnalyzer {
         return string + operand;
     }
     
-//    2 + 5 * 3
-//    3 5 2 + *
-//    
-//    ADD a1 a2 x1
-//    MUL x a3 x2
-//    STO x2
+    public void close() {
+        try {
+            out.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
     
 }
