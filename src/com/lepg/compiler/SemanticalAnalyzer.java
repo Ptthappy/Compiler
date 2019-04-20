@@ -130,7 +130,20 @@ public class SemanticalAnalyzer {
             if(!Compiler.Operator.contains(token)){
                 output += token;
                 if(!stack.empty()){
-                    output += stack.pop();
+                    if(!tokens.isEmpty()){
+                        if(tokens.get(0).equals(stack.peek())){
+                            stack.push(tokens.remove(0));
+                        }else{
+                            while(!stack.empty()){
+                                output += stack.pop();
+                            }
+                        }
+                    }else{
+                        while(!stack.empty()){
+                            output += stack.pop();
+                        }
+                    }
+
                 }
             }else{
                 stack.push(token);
@@ -140,15 +153,7 @@ public class SemanticalAnalyzer {
         System.out.println(output);
 
 
-        for(int i = 0; i < output.length() - 3; i++){
-            String op = output.substring(i, i+1);
-            if(Compiler.Operator.contains(op)){
-                if(output.substring(i+3, i+4).equals(op)){
-                    output = output.substring(0, i) + output.substring(i + 1);
-                }
 
-            }
-        }
 
         System.out.println(output);
 
