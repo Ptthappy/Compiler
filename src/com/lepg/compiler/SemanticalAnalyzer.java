@@ -147,65 +147,96 @@ public class SemanticalAnalyzer {
         //Generar el código ASM y pasarlo a un archivo .txt
         String operands = "";
         String operators = "";
-        for (int i = 0; i < string.length(); i++) {
-            if( Compiler.Operator.contains(((Character)string.charAt(i)).toString()) ) {
-                operands = string.substring(0, i).trim();
-                operators = string.substring(i, string.length()).trim();
-                break;
-            }
-            
-        }
-        
+        int iterations = 0;
         int index = 1;
-        System.out.println("Operands: " + operands + "\nOperators: " + operators);
-        this.STOVar = "a0";
-        while(!operators.equals("")) {
-            String action = "";
-            while(stack.size() < 2) {
-                stack.push(getLastOperand(operands));
-                operands = operands.substring(0, operands.length() - 2);
+        boolean end = true;
+        
+        do {
+            end = true;
+            
+            if (iterations == 0) {
+                for (int i = 0; i < string.length(); i++) {
+                    if( Compiler.Operator.contains(((Character)string.charAt(i)).toString()) ) {
+                        operands = string.substring(0, i).trim();
+                        operators = string.substring(i, string.length()).trim();
+                        break;
+                    }
+                }
+            } else {
+                for (int i = 0; i < operators.length(); i++) {
+                    if( Compiler.Operator.contains(((Character)operators.charAt(i)).toString()) ) {
+                        operands = operators.substring(0, i).trim();
+                        operators = operators.substring(i, operators.length()).trim();
+                        break;
+                    }
+                }
             }
             
-            stack.push(getFirstOperator(operators));
-            operators = operators.substring(1);
+            iterations++;
+            System.out.println("Operands: " + operands);
+            System.out.println("Operators: " + operators);
             
-            String res = "x" + index;
+            int operatorIndex = 0;
+            for ( int i = 0; i < operators.length(); i++) {
+                if(!Compiler.Operator.contains(((Character)operators.charAt(i)).toString())) {
+                    end = false;
+                    operatorIndex = i;
+                    break;
+                }
+            }
+
+            if(end)
+                operatorIndex = operators.length();
+
+            while(!operands.equals("")) {
+                stack.push(getFirstOperand(operands));
+                operands = operands.substring(2);
+            }
             
-            switch(stack.pop()) {
-                case "+":
-                    action = "ADD";
-                    break;
-                    
-                case "-":
-                    action = "SUB";
-                    break;
-                    
-                case "*":
-                    action = "MUL";
-                    break;
-                    
-                case "/":
-                case "%":
-                    action = "DIV";
-                    break;
-                    
-                default:
-                    throw new RuntimeException();
+//            showStack();
+            
+            while(operatorIndex > 0) {
+                operatorIndex--;
+                String action = "";
+
+                stack.push(getFirstOperator(operators));
+                operators = operators.substring(1);
+
+                res = "x" + index;
+
+                switch(stack.pop()) {
+                    case "+":
+                        action = "ADD";
+                        break;
+
+                    case "-":
+                        action = "SUB";
+                        break;
+
+                    case "*":
+                        action = "MUL";
+                        break;
+
+                    case "/":
+                    case "%":
+                        action = "DIV";
+                        break;
+
+                    default:
+                        throw new RuntimeException();
+                }
+                String output = action + "\t" + stack.pop() + "\t" + stack.pop() + "\t" + res;
+                stack.push(res);
+                System.out.println(output);
+                try {
+                    out.write(output.getBytes());
+                    out.write("\n".getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                index++;
             }
-            String output = action + "\t" + stack.pop() + "\t" + stack.pop() + "\t" + res;
-            stack.push(res);
-            System.out.println(output);
-            try {
-                out.write(output.getBytes());
-                out.write("\n".getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-//            System.out.println(s1 + "\t" + s2 + "\t" + op + "\t" + res + "\t");
-//            System.out.println(operands);
-//            System.out.println(operators);
-            index++;
-        }
+        } while(!end);
         
         if (!STOVar.equals("")) {
             System.out.println("STO\t" + this.res + "\t" + STOVar);
@@ -216,17 +247,30 @@ public class SemanticalAnalyzer {
                 e.printStackTrace();
             }
         }
+        
+        if(!stack.empty()) {
+            stack.clear();
+        }
+        
         return true;
     }
     
-    private String getLastOperand(String string) {
-        String s = string.substring(string.length() - 2);
+    private String getFirstOperand(String string) {
+        String s = string.substring(0, 2);
         return s;
     }
     
     private String getFirstOperator(String string) {
         String s = string.substring(0, 1);
         return s;
+    }
+    
+    public void showStack() {
+        System.out.print("Stack: ");
+        for (int i = 0; i < stack.size(); i++) {
+            System.out.print(stack.get(i) + "\t");
+        }
+        System.out.println();
     }
         
     public void close() {
