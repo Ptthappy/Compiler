@@ -139,6 +139,19 @@ public class SemanticalAnalyzer {
         }
         System.out.println(output);
 
+
+        for(int i = 0; i < salida.length() - 3; i++){
+            String op = salida.substring(i, i+1);
+            if(Compiler.Operator.contains(op)){
+                if(salida.substring(i+3, i+4).equals(op)){
+                    salida = salida.substring(0, i) + salida.substring(i + 1);
+                }
+
+            }
+        }
+
+        System.out.println(salida);
+
         stack.clear();
         
         return output;
