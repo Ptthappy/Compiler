@@ -138,7 +138,23 @@ public class SemanticalAnalyzer {
         }
         System.out.println(output);
 
+
+        for(int i = 0; i < output.length() - 3; i++){
+            String op = output.substring(i, i+1);
+            if(Compiler.Operator.contains(op)){
+                if(output.substring(i+3, i+4).equals(op)){
+                    output = output.substring(0, i) + output.substring(i + 1);
+                }
+
+            }
+        }
+
+        System.out.println(output);
+
         stack.clear();
+        //csm quisiera estar haciendo el manga reader
+
+
         
         return output;
     }
