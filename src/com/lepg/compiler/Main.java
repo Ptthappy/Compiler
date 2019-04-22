@@ -31,32 +31,5 @@ public class Main {
         } while(true);
         compiler.close();
     }
-    
-    
+       
 }
-
-        /**
-         * ESTO SE HACE ARRIBA****
-         * a1 + a2 - a3
-         * -> a2a1+ - a3
-         * -> a3a2a1+-
-         * a3a2a1+-
-         * 
-         * 
-         * Esto se hace en codeGenerator
-         * -> ADD a3 a2 x1
-         * -> SUB x1 a1 x2
-         *  - Verifica que ya no queden términos (true) -
-         * -> return (porque no se almacenó ninguna variable)
-         * 
-         * a1 = a2 + a3 - a4
-         * -> a2 + a3 - a4 (separa a1 del string completo y cuando termine el procedimiento vuelve a salir xd)
-         * ...
-         * -> ADD a3 a2 x1
-         * -> SUB x1 a1 x2 
-         * -> STO x2 a1
-         * 
-        */
-        //Generar el string
-        // a5a4a3a2a1+++-
-        

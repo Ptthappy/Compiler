@@ -54,12 +54,12 @@ public class SemanticalAnalyzer {
     }
     
     public boolean analyze(String input) {
-        System.out.println();
+//        System.out.println();
         input = input.substring(0, input.length() - 1).trim();  // EPA CIUDADANO -> Quitar el $
         this.par = Compiler.par;
         this.STOVar = "";
         this.res = "";
-        System.out.println(this.par);
+//        System.out.println(this.par);
 
         switch(Compiler.statementType) {  //Maneja el lado izquierdo del statement
             case 0:
@@ -80,10 +80,9 @@ public class SemanticalAnalyzer {
                 throw new RuntimeException();
         }
         
-        System.out.println(input);
+//        System.out.println(input);
         String in = "";
         if ((in = resolve(input)).equals("")) {
-            System.out.println("Le cayó mierda al abanico");
             return false;
         } else {
             generateCode(in);
@@ -98,11 +97,11 @@ public class SemanticalAnalyzer {
             int x1 = 0;
             this.par--;
             String input2 = input.substring((x0 = input.indexOf(Compiler.Symbol.get(3))) + 1);
-            System.out.println(this.par);
+//            System.out.println(this.par);
             
             if(this.par == 0) {
-                input2 = input2.substring(0, (x1 = input2.indexOf(Compiler.Symbol.get(4))) - 1);
-                System.out.println(input2);
+                input2 = input2.substring(0, (x1 = input2.indexOf(Compiler.Symbol.get(4))) - 2);
+//                System.out.println(input2);
             } else {
                 if (input2.indexOf(Compiler.Symbol.get(3)) < input2.indexOf(Compiler.Symbol.get(4))) { //Anidados
                     input2 = input2.substring(0, (x1 = input2.lastIndexOf(Compiler.Symbol.get(4))) - 1);
@@ -113,7 +112,7 @@ public class SemanticalAnalyzer {
             }
             x1 += 2;
             input = input.substring(0, x0) + input2 + input.substring(x1);
-            System.out.println("input: " + input);
+//            System.out.println("input: " + input);
         }
         
         String[] split = input.split(" ");
@@ -149,18 +148,11 @@ public class SemanticalAnalyzer {
             }
 
         }
-        System.out.println(output);
-
-
-
-
-        System.out.println(output);
+//        System.out.println(output);
 
         stack.clear();
         //csm quisiera estar haciendo el manga reader
 
-
-        
         return output;
     }
     
@@ -171,6 +163,9 @@ public class SemanticalAnalyzer {
         int iterations = 0;
         int index = 1;
         boolean end = true;
+        
+//        System.out.println(string);
+//        System.out.println("culo");
         
         do {
             end = true;
@@ -193,9 +188,13 @@ public class SemanticalAnalyzer {
                 }
             }
             
+            if(operands.equals("")) {
+                operands = string;
+            }
+            
             iterations++;
-            System.out.println("Operands: " + operands);
-            System.out.println("Operators: " + operators);
+//            System.out.println("Operands: " + operands);
+//            System.out.println("Operators: " + operators);
             
             int operatorIndex = 0;
             for ( int i = 0; i < operators.length(); i++) {
@@ -220,9 +219,14 @@ public class SemanticalAnalyzer {
                 operatorIndex--;
                 String action = "";
 
+                if(stack.size() == 1) {
+                    showStack();
+                    break;
+                }
+
                 stack.push(getFirstOperator(operators));
                 operators = operators.substring(1);
-
+                
                 res = "x" + index;
 
                 switch(stack.pop()) {
